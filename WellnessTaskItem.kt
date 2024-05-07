@@ -21,22 +21,11 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun WellnessTaskItem(taskName: String, modifier: Modifier = Modifier) {
-    var checkedState by rememberSaveable { mutableStateOf(false) }
-    WellnessTaskItem(
-        taskName,
-        checkedState,
-        { newValue -> checkedState = newValue },
-        {},
-        modifier
-    )
-}
-
-@Composable
 fun WellnessTasksList(
     modifier: Modifier = Modifier,
-    list: List<WellnessTask> = rememberSaveable { getWellnessTasks() }
-) {
+    list: List<WellnessTask>,
+    onCloseTask: (task: WellnessTask) -> Unit,
+    ) {
     LazyColumn(
         modifier = modifier,
     ) {
@@ -44,10 +33,27 @@ fun WellnessTasksList(
             items = list,
             key = { task -> task.id}, //Key word will help to remember the id so that the composable won't compose unless the value changes
         ) { task ->
-            WellnessTaskItem(taskName = task.label)
+            WellnessTaskItem(taskName = task.label, onClose = { onCloseTask(task) })
         }
     }
 }
+
+@Composable
+fun WellnessTaskItem(
+    taskName: String,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var checkedState by rememberSaveable { mutableStateOf(false) }
+    WellnessTaskItem(
+        taskName,
+        checkedState,
+        { newValue -> checkedState = newValue },
+        onClose,
+        modifier
+    )
+}
+
 
 @Composable
 fun WellnessTaskItem(
