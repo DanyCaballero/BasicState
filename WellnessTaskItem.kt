@@ -11,10 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,9 +18,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun WellnessTasksList(
-    modifier: Modifier = Modifier,
     list: List<WellnessTask>,
-    onCloseTask: (task: WellnessTask) -> Unit,
+    onCheckedTask: (WellnessTask, Boolean) -> Unit,
+    onCloseTask: (WellnessTask) -> Unit,
+    modifier: Modifier = Modifier
     ) {
     LazyColumn(
         modifier = modifier,
@@ -33,27 +30,15 @@ fun WellnessTasksList(
             items = list,
             key = { task -> task.id}, //Key word will help to remember the id so that the composable won't compose unless the value changes
         ) { task ->
-            WellnessTaskItem(taskName = task.label, onClose = { onCloseTask(task) })
+            WellnessTaskItem(
+                taskName = task.label,
+                checked = task.isChecked,
+                onCheckedChange = { checked -> onCheckedTask (task, checked) },
+                onClose = { onCloseTask(task) }
+            )
         }
     }
 }
-
-@Composable
-fun WellnessTaskItem(
-    taskName: String,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var checkedState by rememberSaveable { mutableStateOf(false) }
-    WellnessTaskItem(
-        taskName,
-        checkedState,
-        { newValue -> checkedState = newValue },
-        onClose,
-        modifier
-    )
-}
-
 
 @Composable
 fun WellnessTaskItem(
